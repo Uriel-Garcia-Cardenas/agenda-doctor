@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /horarios/{fecha} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /agenda/{fecha} {
+      allow read: if true;
+      allow create: if request.auth != null ||
+        (request.resource.data.keys().hasOnly(['ocupados']) &&
+         request.resource.data.ocupados is list &&
+         request.resource.data.ocupados.size() == 1);
+      allow update: if request.auth != null ||
+        (request.resource.data.keys().hasOnly(['ocupados']) &&
+         request.resource.data.ocupados is list &&
+         resource.data.ocupados is list &&
+         request.resource.data.ocupados.size() == resource.data.ocupados.size() + 1 &&
+         request.resource.data.ocupados.hasAll(resource.data.ocupados));
+      allow delete: if request.auth != null;
+    }
+
+    match /citas/{citaId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null ||
+        (request.resource.data.keys().hasAll(['nombre','fecha','hora','creadoEn']) &&
+         request.resource.data.nombre is string &&
+         request.resource.data.nombre.size() > 0 &&
+         request.resource.data.nombre.size() <= 100 &&
+         request.resource.data.fecha is string &&
+         request.resource.data.hora is string &&
+         existsAfter(/databases/$(database)/documents/agenda/$(request.resource.data.fecha)));
+      allow update, delete: if request.auth != null;
+    }
+  }
+}

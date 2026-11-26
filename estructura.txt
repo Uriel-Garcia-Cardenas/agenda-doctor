@@ -1,0 +1,15 @@
+Listado de rutas de carpetas para el volumen Acer
+El número de serie del volumen es 7EA9-FDC4
+C:.
+    admin.html
+    admin.js
+    app.js
+    estructura.txt
+    firebase-config.js
+    firestore.rules
+    index.html
+    README.md
+    styles.css
+    
+No existe ninguna subcarpeta 
+
